@@ -1,10 +1,10 @@
-import puppeteer from 'puppeteer';
+import puppeteer from "puppeteer";
 import {KittenButtons} from "./kittenButtons.js";
 import {Button} from "./button.js";
 import {MultiInterval, Runner} from "./multiInterval.js";
 import {loadStorage, saveStorage} from "./localStorage.js";
 
-const AUTO_SAVE_FILE = 'auto-save.json';
+const AUTO_SAVE_FILE = "auto-save.json";
 
 (async () => {
   const page = await launch();
@@ -21,15 +21,15 @@ const AUTO_SAVE_FILE = 'auto-save.json';
 async function launch() {
   const settings = {
     headless: false,
-    defaultViewport: null
-  }
+    defaultViewport: null,
+  };
   const browser = await puppeteer.launch(settings);
   const page = await browser.newPage();
-  await page.goto('http://kittensgame.com/web/');
+  await page.goto("http://kittensgame.com/web/");
 
   const fName = process.argv[2] || AUTO_SAVE_FILE;
   await loadStorage(page, fName);
 
-  await page.waitForSelector('#game', {visible: true});
+  await page.waitForSelector("#game", {visible: true});
   return page;
 }

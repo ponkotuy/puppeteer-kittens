@@ -12,13 +12,15 @@ export class KittenButtons {
   }
 
   async attach() {
-    await this.page.$$eval(`div.btnContent:not([${ATTR}])`, (divs, buttons, ATTR) => {
+    const selector = `div.btnContent:not([${ATTR}])`;
+    // prettier-ignore
+    await this.page.$$eval(selector, (divs, buttons, ATTR) => {
       const determine = (content: string) => {
-        const entry = buttons.find(btn => content.startsWith(btn.text));
+        const entry = buttons.find((btn) => content.startsWith(btn.text));
         return entry?.name;
-      }
+      };
 
-      divs.forEach(div => {
+      divs.forEach((div) => {
         if (div.textContent) {
           const buttonType = determine(div.textContent);
           div.setAttribute(ATTR, buttonType || "");
@@ -29,10 +31,9 @@ export class KittenButtons {
     }, Button.values, ATTR);
   }
 
-
   async click(type: ButtonType, options?: ClickOptions): Promise<boolean> {
     const btn = await this.page.$(`div.btnContent[${ATTR}="${type.name}"]`);
-    if(btn === null && options?.retry) {
+    if (btn === null && options?.retry) {
       await this.attach();
       return await this.click(type);
     }

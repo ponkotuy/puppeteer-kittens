@@ -1,5 +1,4 @@
-
-import {setInterval} from "node:timers/promises"
+import {setInterval} from "node:timers/promises";
 
 export class MultiInterval {
   baseTick: number;
@@ -14,11 +13,11 @@ export class MultiInterval {
   }
 
   async run() {
-    const lastRun: number[] = []
+    const lastRun: number[] = [];
     for await (const _ of setInterval(this.baseTick)) {
       this.runners.forEach((runner, idx) => {
         const elapsed = Date.now() - (lastRun[idx] || 0);
-        if(runner.tick <= elapsed || runner.tick <= this.baseTick) {
+        if (runner.tick <= elapsed || runner.tick <= this.baseTick) {
           runner.func();
           lastRun[idx] = Date.now();
         }
