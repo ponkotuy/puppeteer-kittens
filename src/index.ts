@@ -3,6 +3,7 @@ import {KittenButtons} from "./kittenButtons.js";
 import {Button} from "./button.js";
 import {MultiInterval, Runner} from "./multiInterval.js";
 import {loadStorage, saveStorage} from "./localStorage.js";
+import {scrapeResources} from "./kittenResources.js";
 
 const AUTO_SAVE_FILE = "auto-save.json";
 
@@ -12,9 +13,16 @@ const AUTO_SAVE_FILE = "auto-save.json";
   const buttons = new KittenButtons(page);
   await buttons.attach();
 
-  const interval = new MultiInterval(100);
-  interval.add(new Runner(500, () => buttons.click(Button.Harvest, {retry: true})));
+  const interval = new MultiInterval(1000);
+  interval.add(new Runner(1000, () => buttons.click(Button.Harvest, {retry: true})));
   interval.add(new Runner(10000, () => saveStorage(page, AUTO_SAVE_FILE)));
+  interval.add(
+    new Runner(2000, () => {
+      scrapeResources(page).then((resources) => {
+        console.log(resources);
+      });
+    })
+  );
   await interval.run();
 })();
 

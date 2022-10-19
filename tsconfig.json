@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "lib": ["esnext", "dom"],
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "module": "ES2015",
     "rootDir": "./src/",
     "moduleResolution": "node",
