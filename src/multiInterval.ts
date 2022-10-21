@@ -26,12 +26,7 @@ export class MultiInterval {
   }
 }
 
-export class Runner {
+export interface Runner {
   tick: number;
   func: () => void;
-
-  constructor(tick: number, func: () => void) {
-    this.tick = tick;
-    this.func = func;
-  }
 }
