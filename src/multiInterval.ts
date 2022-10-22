@@ -30,3 +30,20 @@ export interface Runner {
   tick: number;
   func: () => void;
 }
+
+export class SwitchingRunner implements Runner {
+  tick: number;
+  func: () => void;
+  enabled: boolean = true;
+
+  constructor(runner: Runner) {
+    this.tick = runner.tick;
+    this.func = () => {
+      if(this.enabled) runner.func();
+    }
+  }
+
+  switching(value: boolean) {
+    this.enabled = value;
+  }
+}

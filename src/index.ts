@@ -1,7 +1,7 @@
 import puppeteer from "puppeteer";
 import {KittenButtons} from "./kittenButtons.js";
 import {Button} from "./button.js";
-import {MultiInterval} from "./multiInterval.js";
+import {MultiInterval, SwitchingRunner} from "./multiInterval.js";
 import {loadStorage, saveStorage} from "./localStorage.js";
 import {ResourceMaxStrategy} from "./resourceMaxStrategy.js";
 import {cheatUI} from "./cheatUI.js";
@@ -16,12 +16,24 @@ const AUTO_SAVE_FILE = "auto-save.json";
   await buttons.attach();
 
   await cheatUI(page);
+  const commander = new ReceiveCommand(page);
+
+  const runners = [
+    new SwitchingRunner({tick: 1000, func: () => buttons.click(Button.Harvest, {retry: true})}),
+    new SwitchingRunner({tick: 10000, func: () => saveStorage(page, AUTO_SAVE_FILE)}),
+    new SwitchingRunner(new ResourceMaxStrategy(page, buttons))
+  ];
 
   const interval = new MultiInterval(100);
-  interval.add(new ReceiveCommand(page));
-  interval.add({tick: 1000, func: () => buttons.click(Button.Harvest, {retry: true})});
-  interval.add({tick: 10000, func: () => saveStorage(page, AUTO_SAVE_FILE)});
-  interval.add(new ResourceMaxStrategy(page, buttons));
+  interval.add(commander);
+  interval.add(...runners);
+  commander.addReceivers({
+    name: "cheat",
+    func: value => {
+      const b = value == 'true';
+      runners.forEach(r => r.switching(b));
+    }
+  });
   await interval.run();
 })();
 
