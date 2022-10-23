@@ -1,8 +1,8 @@
-import {Runner} from "./multiInterval.js";
+import {Runner} from "../util/multiInterval.js";
 import {Page} from "puppeteer";
-import {Resource, scrapeResources} from "./kittenResources.js";
-import {KittenButtons} from "./kittenButtons.js";
-import {Button} from "./button.js";
+import {Resource, scrapeResources} from "../browser/kittenResources.js";
+import {KittenButtons} from "../browser/kittenButtons.js";
+import {Button} from "../browser/button.js";
 
 export class ResourceMaxStrategy implements Runner {
   tick: number = 1000;

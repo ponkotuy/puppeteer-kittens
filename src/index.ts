@@ -1,11 +1,11 @@
 import puppeteer from "puppeteer";
-import {KittenButtons} from "./kittenButtons.js";
-import {Button} from "./button.js";
-import {MultiInterval, SwitchingRunner} from "./multiInterval.js";
-import {loadStorage, saveStorage} from "./localStorage.js";
-import {ResourceMaxStrategy} from "./resourceMaxStrategy.js";
-import {cheatUI} from "./cheatUI.js";
-import {ReceiveCommand} from "./receiveCommand.js";
+import {KittenButtons} from "./browser/kittenButtons.js";
+import {Button} from "./browser/button.js";
+import {MultiInterval, SwitchingRunner} from "./util/multiInterval.js";
+import {loadStorage, saveStorage} from "./browser/localStorage.js";
+import {ResourceMaxStrategy} from "./strategy/resourceMaxStrategy.js";
+import {cheatUI} from "./browser/cheatUI.js";
+import {ReceiveCommand} from "./browser/receiveCommand.js";
 
 const AUTO_SAVE_FILE = "auto-save.json";
 
@@ -19,7 +19,7 @@ const AUTO_SAVE_FILE = "auto-save.json";
   const commander = new ReceiveCommand(page);
 
   const runners = [
-    new SwitchingRunner({tick: 1000, func: () => buttons.click(Button.Harvest, {retry: true})}),
+    new SwitchingRunner({tick: 100, func: () => buttons.click(Button.Harvest, {retry: true})}),
     new SwitchingRunner({tick: 10000, func: () => saveStorage(page, AUTO_SAVE_FILE)}),
     new SwitchingRunner(new ResourceMaxStrategy(page, buttons))
   ];

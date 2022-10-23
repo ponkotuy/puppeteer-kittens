@@ -32,13 +32,18 @@ export class KittenButtons {
   }
 
   async click(type: ButtonType, options?: ClickOptions): Promise<boolean> {
-    const btn = await this.page.$(`div.btnContent[${ATTR}="${type.name}"]`);
-    if (btn === null && options?.retry) {
+    const result = await this.page.$eval(
+        `div.btnContent[${ATTR}="${type.name}"]`,
+        btn => {
+          try { (btn as HTMLElement).click(); return true; }
+          catch (err) { return false; }
+        }
+    );
+    if (result && options?.retry) {
       await this.attach();
       return await this.click(type);
     }
-    await btn?.click();
-    return btn !== null;
+    return result;
   }
 }
 

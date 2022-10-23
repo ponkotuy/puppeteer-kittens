@@ -1,5 +1,5 @@
 import {Page} from "puppeteer";
-import {Runner} from "./multiInterval.js";
+import {Runner} from "../util/multiInterval.js";
 
 export class ReceiveCommand implements Runner {
   tick = 100;

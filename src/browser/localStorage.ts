@@ -25,7 +25,8 @@ export async function saveStorage(page: Page, fName: string): Promise<boolean> {
 }
 
 export async function loadStorage(page: Page, fName: string) {
-  const data = await fs.readFile(fName, "utf-8");
+  const data = await fs.readFile(fName, "utf-8").catch(err => null);
+  if(data == null) return;
   await page.evaluate(
     (key, storage) => {
       localStorage.setItem(key, storage);
