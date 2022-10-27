@@ -11,20 +11,22 @@ export class ReceiveCommand implements Runner {
   }
 
   async func(): Promise<void> {
-    const result = await this.page.$eval('#actor', (elem) => {
+    const result = await this.page.$eval("#actor", elem => {
       return [...elem.children].map(event => {
         const type = event.getAttribute("data-type");
         const value = event.getAttribute("data-value");
         return type && value ? {type, value} : null;
       });
     });
-    await this.page.$eval('#actor', (elem) => {
+    await this.page.$eval("#actor", elem => {
       [...elem.children].forEach(elem => elem.remove());
     });
-    result.filter((x): x is NonNullable<typeof x> => x != null).forEach(command => {
-      const target = this.receivers.find(receiver => receiver.name == command.type);
-      target?.func(command.value);
-    });
+    result
+      .filter((x): x is NonNullable<typeof x> => x != null)
+      .forEach(command => {
+        const target = this.receivers.find(receiver => receiver.name == command.type);
+        target?.func(command.value);
+      });
   }
 
   addReceivers(...commands: Command[]) {

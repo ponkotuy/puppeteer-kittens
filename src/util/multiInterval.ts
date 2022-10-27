@@ -19,14 +19,14 @@ export class MultiInterval {
     for await (const _ of setInterval(this.baseTick)) {
       this.runners.map(async (runner, idx) => {
         const elapsed = Date.now() - (lastRun[idx] || 0);
-        if ((!done[idx]) && (runner.tick <= elapsed || runner.tick <= this.baseTick)) {
+        if (!done[idx] && (runner.tick <= elapsed || runner.tick <= this.baseTick)) {
           const result = await runner.func();
           lastRun[idx] = Date.now();
-          if(result == RunnerResult.Done) done[idx] = true;
-          if(result == RunnerResult.Exit) exit = true;
+          if (result == RunnerResult.Done) done[idx] = true;
+          if (result == RunnerResult.Exit) exit = true;
         }
       });
-      if(exit) break;
+      if (exit) break;
     }
   }
 }
@@ -39,7 +39,7 @@ export interface Runner {
 export const RunnerResult = {
   Continue: "continue",
   Done: "done",
-  Exit: "exit"
+  Exit: "exit",
 } as const;
 
-export type RunnerResult = typeof RunnerResult[keyof typeof RunnerResult]
+export type RunnerResult = typeof RunnerResult[keyof typeof RunnerResult];

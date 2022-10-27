@@ -15,8 +15,8 @@ export async function scrapeResources(page: Page): Promise<Resource[]> {
       return Math.pow(1000, idx + 1) * number;
     }
 
-    return [...document.querySelectorAll<HTMLElement>("div.res-row")].map((row) => {
-      const name = [...row.classList].flatMap((cls) => [...cls.matchAll(NAME_RE)])[0].slice(1)[0];
+    return [...document.querySelectorAll<HTMLElement>("div.res-row")].map(row => {
+      const name = [...row.classList].flatMap(cls => [...cls.matchAll(NAME_RE)])[0].slice(1)[0];
       const text = row.querySelector("div.res-cell.resource-name")!.getAttribute("title")!;
       const amountText = row.querySelector("div.res-cell.resAmount")!.textContent!;
       const amount = fixSI(amountText);

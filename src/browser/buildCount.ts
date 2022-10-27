@@ -2,12 +2,13 @@ import {Page} from "puppeteer";
 import {Button, ButtonObjects} from "./button.js";
 
 export async function scrapeBuildCount(page: Page): Promise<BuildCounts> {
+  // prettier-ignore
   const result = await page.$$eval("div.btnContent", (buttons, Button) => {
     const NUMBER_RE = /[-.\d]+/;
     return buttons.map((btn) => {
       const text = btn.textContent!;
       const buttonType = Button.find(b => text.startsWith(b.text));
-      if(buttonType) {
+      if (buttonType) {
         const numberText = text.match(NUMBER_RE);
         const count = numberText == null ? 0 : parseInt(numberText[0]);
         return {type: buttonType.name, count};

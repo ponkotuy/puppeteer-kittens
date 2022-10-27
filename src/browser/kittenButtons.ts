@@ -3,6 +3,7 @@ import {Button, buttonText} from "./button.js";
 
 // Exec attach before using
 export async function kittenClick(page: Page, button: Button): Promise<ClickResult> {
+  // prettier-ignore
   return await page.$$eval(`div.btnContent`, (divs, target) => {
     const div = divs.find((div) => {
       const text = div.textContent!;
@@ -23,4 +24,4 @@ export async function kittenClick(page: Page, button: Button): Promise<ClickResu
   });
 }
 
-type ClickResult = "Success" | "Disabled" | "NotFound" | "Failure"
+type ClickResult = "Success" | "Disabled" | "NotFound" | "Failure";

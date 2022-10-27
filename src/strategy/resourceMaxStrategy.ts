@@ -15,7 +15,7 @@ export class ResourceMaxStrategy implements Runner {
   async func(): Promise<void> {
     const resources = await scrapeResources(this.page);
     resources.forEach(resource => {
-      if (resource.max * 0.95 < resource.amount) this.strategy(resource)
+      if (resource.max * 0.95 < resource.amount) this.strategy(resource);
     });
   }
 

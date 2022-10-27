@@ -9,7 +9,7 @@ import {ReceiveCommand} from "./browser/receiveCommand.js";
 
 const AUTO_SAVE_FILE = "auto-save.json";
 
-type GlobalState = "OFF" | "Startup" | "Main"
+type GlobalState = "OFF" | "Startup" | "Main";
 let global = "Startup" as GlobalState;
 
 (async () => {
@@ -20,12 +20,13 @@ let global = "Startup" as GlobalState;
   commander.addReceivers({
     name: "cheat",
     func: value => {
-      const b = value == 'true';
-      if(b) global = "Startup"
-      else global = "OFF"
-    }
+      const b = value == "true";
+      if (b) global = "Startup";
+      else global = "OFF";
+    },
   });
 
+  // prettier-ignore
   const defaults: ((state: GlobalState) => Runner[]) = state => [
       {tick: 10000, func: async () => { await saveStorage(page, AUTO_SAVE_FILE) }},
       commander,
@@ -43,8 +44,8 @@ let global = "Startup" as GlobalState;
   main.add(...defaults("Main"));
   main.add(new ResourceMaxStrategy(page), new RequiredStrategy(page));
 
-// noinspection InfiniteLoopJS
-  while(true) {
+  // noinspection InfiniteLoopJS
+  while (true) {
     switch (global) {
       case "Startup":
         await startup.run();
@@ -85,7 +86,7 @@ class ChangeGlobalState implements Runner {
   }
 
   async func() {
-    if(this.state != global) return RunnerResult.Exit;
+    if (this.state != global) return RunnerResult.Exit;
     return RunnerResult.Continue;
   }
 }

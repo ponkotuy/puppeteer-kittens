@@ -16,7 +16,7 @@ export class RequiredStrategy implements Runner {
     const buildCounts = await scrapeBuildCount(this.page);
     buildCounts.data.forEach(bc => {
       const required = RequiredBuilds.get(bc.type);
-      if(required && bc.count < required) {
+      if (required && bc.count < required) {
         kittenClick(this.page, bc.type);
       }
     });
@@ -25,5 +25,5 @@ export class RequiredStrategy implements Runner {
 
 const RequiredBuilds = new Map<Button, number>([
   [Button.Farm, 50],
-  [Button.House, 50]
+  [Button.House, 50],
 ]);

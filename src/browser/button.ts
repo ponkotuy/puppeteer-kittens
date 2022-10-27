@@ -1,4 +1,3 @@
-
 export const Button = {
   Harvest: "harvest",
   Refining: "refining",
@@ -16,9 +15,9 @@ export const ButtonObjects = ButtonValues.map(b => {
 export function buttonText(button: Button): string {
   switch (button) {
     case "harvest":
-      return "キャットニップの収穫"
+      return "キャットニップの収穫";
     case "refining":
-      return "キャットニップを精製する"
+      return "キャットニップを精製する";
     case "farm":
       return "キャットニップ畑";
     case "house":

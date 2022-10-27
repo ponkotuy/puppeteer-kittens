@@ -5,7 +5,7 @@ import * as fs from "node:fs/promises";
 const KEY_NAME = "com.nuclearunicorn.kittengame.savedata";
 
 export async function saveStorage(page: Page, fName: string): Promise<boolean> {
-  const storage: any = await page.evaluate((key) => {
+  const storage: any = await page.evaluate(key => {
     return localStorage.getItem(key);
   }, KEY_NAME);
 
@@ -26,7 +26,7 @@ export async function saveStorage(page: Page, fName: string): Promise<boolean> {
 
 export async function loadStorage(page: Page, fName: string) {
   const data = await fs.readFile(fName, "utf-8").catch(() => null);
-  if(data == null) return;
+  if (data == null) return;
   await page.evaluate(
     (key, storage) => {
       localStorage.setItem(key, storage);
