@@ -1,10 +1,27 @@
-const Harvest = {name: "harvest", text: "キャットニップの収穫"};
-const Refining = {name: "refining", text: "キャットニップを精製する"};
 
 export const Button = {
-  Harvest: Harvest,
-  Refining: Refining,
-  values: [Harvest, Refining],
-};
+  Harvest: "harvest",
+  Refining: "refining",
+  Farm: "farm",
+  House: "house",
+} as const;
 
-export type ButtonType = typeof Harvest | typeof Refining;
+export type Button = typeof Button[keyof typeof Button];
+
+export const ButtonValues = Object.values(Button);
+export const ButtonObjects = ButtonValues.map(b => {
+  return {name: b, text: buttonText(b)};
+});
+
+export function buttonText(button: Button): string {
+  switch (button) {
+    case "harvest":
+      return "キャットニップの収穫"
+    case "refining":
+      return "キャットニップを精製する"
+    case "farm":
+      return "キャットニップ畑";
+    case "house":
+      return "小屋";
+  }
+}

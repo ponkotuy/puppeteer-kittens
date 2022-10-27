@@ -10,7 +10,7 @@ export class ReceiveCommand implements Runner {
     this.page = page;
   }
 
-  async func() {
+  async func(): Promise<void> {
     const result = await this.page.$eval('#actor', (elem) => {
       return [...elem.children].map(event => {
         const type = event.getAttribute("data-type");

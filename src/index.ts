@@ -1,7 +1,7 @@
 import puppeteer from "puppeteer";
-import {KittenButtons} from "./browser/kittenButtons.js";
-import {Button} from "./browser/button.js";
-import {MultiInterval, SwitchingRunner} from "./util/multiInterval.js";
+import {RequiredStrategy} from "./strategy/requiredStrategy.js";
+import {StartupStrategy} from "./strategy/startupStrategy.js";
+import {MultiInterval, Runner, RunnerResult} from "./util/multiInterval.js";
 import {loadStorage, saveStorage} from "./browser/localStorage.js";
 import {ResourceMaxStrategy} from "./strategy/resourceMaxStrategy.js";
 import {cheatUI} from "./browser/cheatUI.js";
@@ -9,32 +9,55 @@ import {ReceiveCommand} from "./browser/receiveCommand.js";
 
 const AUTO_SAVE_FILE = "auto-save.json";
 
+type GlobalState = "OFF" | "Startup" | "Main"
+let global = "Startup" as GlobalState;
+
 (async () => {
   const page = await launch();
 
-  const buttons = new KittenButtons(page);
-  await buttons.attach();
-
   await cheatUI(page);
   const commander = new ReceiveCommand(page);
-
-  const runners = [
-    new SwitchingRunner({tick: 100, func: () => buttons.click(Button.Harvest, {retry: true})}),
-    new SwitchingRunner({tick: 10000, func: () => saveStorage(page, AUTO_SAVE_FILE)}),
-    new SwitchingRunner(new ResourceMaxStrategy(page, buttons))
-  ];
-
-  const interval = new MultiInterval(100);
-  interval.add(commander);
-  interval.add(...runners);
   commander.addReceivers({
     name: "cheat",
     func: value => {
       const b = value == 'true';
-      runners.forEach(r => r.switching(b));
+      if(b) global = "Startup"
+      else global = "OFF"
     }
   });
-  await interval.run();
+
+  const defaults: ((state: GlobalState) => Runner[]) = state => [
+      {tick: 10000, func: async () => { await saveStorage(page, AUTO_SAVE_FILE) }},
+      commander,
+      new ChangeGlobalState(state)
+  ]
+
+  const off = new MultiInterval(100);
+  off.add(...defaults("OFF"));
+
+  const startup = new MultiInterval(100);
+  startup.add(...defaults("Startup"));
+  startup.add(new StartupStrategy(page));
+
+  const main = new MultiInterval(100);
+  main.add(...defaults("Main"));
+  main.add(new ResourceMaxStrategy(page), new RequiredStrategy(page));
+
+// noinspection InfiniteLoopJS
+  while(true) {
+    switch (global) {
+      case "Startup":
+        await startup.run();
+        global = "Main";
+        break;
+      case "Main":
+        await main.run();
+        break;
+      case "OFF":
+        await off.run();
+        break;
+    }
+  }
 })();
 
 async function launch() {
@@ -51,4 +74,18 @@ async function launch() {
 
   await page.waitForSelector("#game", {visible: true});
   return page;
+}
+
+class ChangeGlobalState implements Runner {
+  tick: number = 100;
+  state: GlobalState;
+
+  constructor(state: GlobalState) {
+    this.state = state;
+  }
+
+  async func() {
+    if(this.state != global) return RunnerResult.Exit;
+    return RunnerResult.Continue;
+  }
 }

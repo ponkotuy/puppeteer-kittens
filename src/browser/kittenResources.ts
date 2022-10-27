@@ -3,11 +3,12 @@ import {Page} from "puppeteer";
 export async function scrapeResources(page: Page): Promise<Resource[]> {
   return await page.evaluate(() => {
     const NAME_RE = /^resource_([a-z]+)$/g;
+    const NUMBER_RE = /[-.\d]+/;
     const SI = ["K", "M", "G"];
 
     function fixSI(text: string): number {
       const idx = SI.indexOf(text.slice(-1));
-      const numberText = text.match(/[-.\d]+/);
+      const numberText = text.match(NUMBER_RE);
       if (numberText == null) return 0;
       const number = parseFloat(numberText[0]);
       if (idx < 0) return number;

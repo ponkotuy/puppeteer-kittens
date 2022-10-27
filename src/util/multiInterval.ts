@@ -14,36 +14,32 @@ export class MultiInterval {
 
   async run() {
     const lastRun: number[] = [];
+    const done: boolean[] = [];
+    let exit: boolean = false;
     for await (const _ of setInterval(this.baseTick)) {
-      this.runners.forEach((runner, idx) => {
+      this.runners.map(async (runner, idx) => {
         const elapsed = Date.now() - (lastRun[idx] || 0);
-        if (runner.tick <= elapsed || runner.tick <= this.baseTick) {
-          runner.func();
+        if ((!done[idx]) && (runner.tick <= elapsed || runner.tick <= this.baseTick)) {
+          const result = await runner.func();
           lastRun[idx] = Date.now();
+          if(result == RunnerResult.Done) done[idx] = true;
+          if(result == RunnerResult.Exit) exit = true;
         }
       });
+      if(exit) break;
     }
   }
 }
 
 export interface Runner {
   tick: number;
-  func: () => void;
+  func: () => Promise<RunnerResult | void>;
 }
 
-export class SwitchingRunner implements Runner {
-  tick: number;
-  func: () => void;
-  enabled: boolean = true;
+export const RunnerResult = {
+  Continue: "continue",
+  Done: "done",
+  Exit: "exit"
+} as const;
 
-  constructor(runner: Runner) {
-    this.tick = runner.tick;
-    this.func = () => {
-      if(this.enabled) runner.func();
-    }
-  }
-
-  switching(value: boolean) {
-    this.enabled = value;
-  }
-}
+export type RunnerResult = typeof RunnerResult[keyof typeof RunnerResult]
